@@ -1,11 +1,13 @@
-import { defineWorkersConfig } from "@cloudflare/vitest-pool-workers/config";
+// vite.config.ts
 
-export default defineWorkersConfig({
+import { defineConfig } from 'vitest/config'
+import react from '@vitejs/plugin-react'
+import tsconfigPaths from 'vite-tsconfig-paths'
+ 
+export default defineConfig({
+  plugins: [tsconfigPaths(), react()],
   test: {
-    poolOptions: {
-      workers: {
-        wrangler: { configPath: "./wrangler.jsonc" },
-      },
-    },
+    environment: 'jsdom',
+    include: ['components/*.test.tsx'],
   },
-});
+})
