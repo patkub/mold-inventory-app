@@ -40,8 +40,6 @@ app.post('/sse/message', async (c) => {
   return MoldMCP.serveSSE("/sse").fetch(c.req.raw, c.env, c.executionCtx);
 });
 
-
-// TODO: MCP is broken
 // Serve Streamable HTTP transport
 app.on(['GET', 'POST'], '/mcp', async (c) => {
   // Handle incoming MCP requests and call agent methods
