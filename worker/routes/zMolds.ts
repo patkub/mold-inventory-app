@@ -1,21 +1,16 @@
-import * as z from "zod";
+import { z } from "zod";
 
 // Mold objects for Zod validator
 const zMold = z.object({
   number: z.string(),
   description: z.string(),
   cycle_time: z.number(),
-  status: z.string(),
+  status: z.enum(['Active', 'Maintenance', 'Retired']),
 });
 
 const zUpdateMold = z.object({
   number: z.string(),
-  mold: z.object({
-    number: z.string(),
-    description: z.string(),
-    cycle_time: z.number(),
-    status: z.string()
-  })
+  mold: zMold
 });
 
 const zDeleteMold = z.object({

@@ -25,7 +25,9 @@ export class MoldMCP extends McpAgent<McpAgentEnv> {
       {
         ...zMold.shape,
       },
-      async ({mold}) => {
+      async ({ number, description, cycle_time, status }) => {
+
+        console.log("Mold tool called with: ", number, description, cycle_time, status);
 
         try {
           // Prisma adapter
@@ -33,15 +35,14 @@ export class MoldMCP extends McpAgent<McpAgentEnv> {
 
           // create new mold in database
           const createdMold = await prisma.molds.create({
-            data: mold
+            data: { number, description, cycle_time, status }
           })
 
           // return the new mold as json
-          return { content: [{ type: "text", text: String(JSON.stringify(createdMold)) }] };
+          return { content: [{ type: "text", text: `Added mold ${createdMold.number}.` }] };
 
         } catch (error) {
-          const content = "Failed to create new mold";
-          return { content: [{ type: "text", text: String(JSON.stringify(content)) }] };
+          return { content: [{ type: "text", text: "Failed to add new mold." }] };
         }
 
       }

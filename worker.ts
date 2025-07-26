@@ -2,7 +2,6 @@
 
 // @ts-ignore: Will be resolved by wrangler build
 import openNextWorker from './.open-next/worker.js'; // Adjust path as needed
-import { D1Database } from '@cloudflare/workers-types';
 
 // Hono
 import { Hono } from "hono";
@@ -15,36 +14,13 @@ import { moldsRoute } from './worker/routes/moldsRoute';
 
 // MCP Server
 import { MoldMCP } from './worker/mcp/mcpServer.js';
-
-type Bindings = {
-  CORS_ORIGIN: string[],
-  MOLD_DB: D1Database
-}
+import { setupMCPRoutes } from './worker/routes/mcpRoutes.js';
 
 // Hono
-const app = new Hono<{ Bindings: Bindings }>()
+const app = new Hono()
 
-// Setup CORS
-app.use('*', setupCORS)
-
-// Export the MCP Server
-export { MoldMCP };
-
-// Serve SSE transport (for backward compatibility if needed)
-app.get('/sse', async (c) => {
-  // Handle SSE connections and stream agent notifications
-  return MoldMCP.serveSSE("/sse").fetch(c.req.raw, c.env, c.executionCtx);
-});
-app.post('/sse/message', async (c) => {
-  // Handle SSE connections and stream agent notifications
-  return MoldMCP.serveSSE("/sse").fetch(c.req.raw, c.env, c.executionCtx);
-});
-
-// Serve Streamable HTTP transport
-app.on(['GET', 'POST'], '/mcp', async (c) => {
-  // Handle incoming MCP requests and call agent methods
-  return MoldMCP.serve("/mcp").fetch(c.req.raw, c.env, c.executionCtx);
-})
+// Setup MCP routes
+setupMCPRoutes(app);
 
 // Next.js handler
 app.use("/", async (c) => {
@@ -54,6 +30,8 @@ app.use("/", async (c) => {
 
 // Middleware must be registered before any /api endpoints
 // Require JWT authentication for all /api endpoints
+// Setup CORS
+app.use('/api/*', setupCORS)
 app.use('/api/*', setupJWT)
 // Validate JWT scope claim for CRUD routes
 app.get('/api/molds/*', createScopesMiddleware(["read:molds"]))
@@ -66,4 +44,7 @@ app.delete('/api/molds/*', createScopesMiddleware(["delete:molds"]))
 app.route('/api', moldsRoute)
 
 
+// Export the MCP Server
+export { MoldMCP };
+// Export the Hono app
 export default app
