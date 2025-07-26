@@ -20,7 +20,9 @@
         }
       ],
       "vars": {
-        "CORS_ORIGIN": ["https://mold-inventory-app-production.epicpatka.workers.dev"],
+        "CORS_ORIGIN": [
+          "https://mold-inventory-app-production.epicpatka.workers.dev"
+        ],
         "NEXT_PUBLIC_AUTH0_DOMAIN": "dev-5gm1mr1z8nbmuhv7.us.auth0.com",
         "NEXT_PUBLIC_AUTH0_CLIENT_ID": "DYZT9rpjL5LoJNfpjo8JEQtPaLqyABHO",
         "NEXT_PUBLIC_AUTH0_AUDIENCE": "mold-inventory-app-production.epicpatka.workers.dev/api",
@@ -38,8 +40,26 @@
           "database_name": "mold-inventory-app"
         }
       ],
+      "migrations": [
+        {
+          "new_sqlite_classes": [
+            "MoldMCP"
+          ],
+          "tag": "v1"
+        }
+      ],
+      "durable_objects": {
+        "bindings": [
+          {
+            "class_name": "MoldMCP",
+            "name": "MCP_OBJECT"
+          }
+        ]
+      },
       "vars": {
-        "CORS_ORIGIN": ["http://localhost:3000"],
+        "CORS_ORIGIN": [
+          "http://localhost:3000"
+        ],
         "NEXT_PUBLIC_AUTH0_DOMAIN": "dev-5gm1mr1z8nbmuhv7.us.auth0.com",
         "NEXT_PUBLIC_AUTH0_CLIENT_ID": "DYZT9rpjL5LoJNfpjo8JEQtPaLqyABHO",
         "NEXT_PUBLIC_AUTH0_AUDIENCE": "mold-inventory-app-production.epicpatka.workers.dev/api",

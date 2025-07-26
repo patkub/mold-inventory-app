@@ -13,6 +13,9 @@ import { setupJWT } from './worker/middleware/jwt';
 import { createScopesMiddleware } from './worker/middleware/scopes';
 import { moldsRoute } from './worker/routes/moldsRoute';
 
+// MCP Server
+import { MoldMCP } from './worker/mcp/mcpServer.js';
+
 type Bindings = {
   CORS_ORIGIN: string[],
   MOLD_DB: D1Database
@@ -24,9 +27,29 @@ const app = new Hono<{ Bindings: Bindings }>()
 // Setup CORS
 app.use('*', setupCORS)
 
-// For Cloudflare Workers
+// Export the MCP Server
+export { MoldMCP };
+
+// Serve SSE transport (for backward compatibility if needed)
+app.get('/sse', async (c) => {
+  // Handle SSE connections and stream agent notifications
+  return MoldMCP.serveSSE("/sse").fetch(c.req.raw, c.env, c.executionCtx);
+});
+app.post('/sse/message', async (c) => {
+  // Handle SSE connections and stream agent notifications
+  return MoldMCP.serveSSE("/sse").fetch(c.req.raw, c.env, c.executionCtx);
+});
+
+
+// TODO: MCP is broken
+// Serve Streamable HTTP transport
+app.on(['GET', 'POST'], '/mcp', async (c) => {
+  // Handle incoming MCP requests and call agent methods
+  return MoldMCP.serve("/mcp").fetch(c.req.raw, c.env, c.executionCtx);
+})
+
+// Next.js handler
 app.use("/", async (c) => {
-  // Next.js handler
   // https://github.com/honojs/hono/issues/1677
   return await openNextWorker.fetch(c.req.raw, c.env, c.executionCtx);
 })
