@@ -28,6 +28,18 @@ describe('Molds', () => {
       })
     }));
 
+    // Mock MCP
+    vi.mock('./worker/mcp/mcpServer.js', () => ({
+      MoldMCP: {
+        serveSSE: vi.fn(() => ({
+          fetch: vi.fn(() => new Response())
+        })),
+        serve: vi.fn(() => ({
+          fetch: vi.fn(() => new Response())
+        }))
+      }
+    }));
+
     // when worker calls createPrismaClient, return the mocked prisma object
     vi.mock('./worker/prismaClient', () => ({
       createPrismaClient: vi.fn(() => {

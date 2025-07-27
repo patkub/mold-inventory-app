@@ -2,7 +2,7 @@
 import { Hono } from 'hono';
 import { MoldMCP } from '../mcp/mcpServer.js';
 
-function setupMCPRoutes(app: Hono) {
+function setupMCPRoutes(app:Hono) {
   // Serve SSE transport (for backward compatibility if needed)
   app.get('/sse', async (c) => {
     // Handle SSE connections and stream agent notifications
