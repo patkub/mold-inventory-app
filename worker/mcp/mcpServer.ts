@@ -4,6 +4,7 @@ import { McpAgent } from "agents/mcp";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 import { createPrismaClient } from '../prismaClient.js'
+import { z } from "zod";
 import { zMold } from '../routes/zMolds.js';
 
 interface McpAgentEnv extends Env {
@@ -21,13 +22,13 @@ export class MoldMCP extends McpAgent<McpAgentEnv> {
 
     // Add a mold tool
     this.server.tool(
-      "add",
+      "add-mold",
+      "Tool to add a new mold",
       {
-        ...zMold.shape,
+        ...zMold.shape
       },
-      async ({ number, description, cycle_time, status }) => {
-
-        console.log("Mold tool called with: ", number, description, cycle_time, status);
+      async (mold) => {
+        console.log(`Add mold tool called with: ${JSON.stringify(mold)}`);
 
         try {
           // Prisma adapter
@@ -35,7 +36,7 @@ export class MoldMCP extends McpAgent<McpAgentEnv> {
 
           // create new mold in database
           const createdMold = await prisma.molds.create({
-            data: { number, description, cycle_time, status }
+            data: mold
           })
 
           // return the new mold as json
